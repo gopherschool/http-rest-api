@@ -2,6 +2,8 @@ package sqlstore
 
 import (
 	"database/sql"
+
+	"github.com/gopherschool/http-rest-api/internal/app/store"
 )
 
 // Store ...
@@ -18,7 +20,7 @@ func New(db *sql.DB) *Store {
 }
 
 // User ...
-func (s *Store) User() *UserRepository {
+func (s *Store) User() store.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
 	}
