@@ -1,4 +1,4 @@
-package store
+package sqlstore
 
 import "github.com/gopherschool/http-rest-api/internal/app/model"
 
