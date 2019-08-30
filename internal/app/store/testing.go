@@ -1,29 +1,32 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"testing"
+
+	_ "github.com/lib/pq" // ...
 )
 
-// TestStore ...
-func TestStore(t *testing.T, databaseURL string) (*Store, func(...string)) {
+// TestDB ...
+func TestDB(t *testing.T, databaseURL string) (*sql.DB, func(...string)) {
 	t.Helper()
 
-	config := NewConfig()
-	config.DatabaseURL = databaseURL
-	s := New(config)
-	if err := s.Open(); err != nil {
+	db, err := sql.Open("postgres", databaseURL)
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	return s, func(tables ...string) {
+	if err := db.Ping(); err != nil {
+		t.Fatal(err)
+	}
+
+	return db, func(tables ...string) {
 		if len(tables) > 0 {
-			if _, err := s.db.Exec(fmt.Sprintf("TRUNCATE %s CASCADE", strings.Join(tables, ", "))); err != nil {
-				t.Fatal(err)
-			}
+			db.Exec(fmt.Sprintf("TRUNCATE %s CASCADE", strings.Join(tables, ", ")))
 		}
 
-		s.Close()
+		db.Close()
 	}
 }
